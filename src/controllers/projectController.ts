@@ -33,48 +33,46 @@ export const createProject = async (
 
 // Get all projects
 export const getAllProjects = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
-    try {
-      // Extract the status and sort query parameters
-      const { status, sort } = req.query;
-  
-      // Validate the status if provided
-      if (status && !Object.values(STATUS).includes(status as STATUS)) {
-        return resNotFound(res, "Invalid status value." );
-      }
-  
-      // Build the "where" condition dynamically
-      const whereCondition: any = { is_deleted: false }; // Ensure we only fetch non-deleted projects
-  
-      // Add status filter if provided and valid
-      if (status) {
-        whereCondition.status = status;
-      }
-  
-      // Determine the sorting order (default is ascending if no `sort` query is provided)
-      const orderCondition: any = [["due_date", "ASC"]]; // Default to ascending order
-  
-      if (sort && (sort === 'asc' || sort === 'desc')) {
-        orderCondition[0][1] = sort.toUpperCase(); // Update the sort direction based on the query
-      }
-  
-      // Fetch projects based on the dynamic condition and sorting
-      const projects = await Project.findAll({
-        where: whereCondition,
-        order: orderCondition, // Apply sorting based on `due_date`
-      });
-  
-    
-  
-      // If projects are found, respond with the data
-      resSuccess(res, "Projects fetched successfully", projects);
-    } catch (err) {
-      next(err); // Pass the error to the error handler
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    // Extract the status and sort query parameters
+    const { status, sort } = req.query;
+
+    // Validate the status if provided
+    if (status && !Object.values(STATUS).includes(status as STATUS)) {
+      return resNotFound(res, "Invalid status value.");
     }
-  };
+
+    // Build the "where" condition dynamically
+    const whereCondition: any = { is_deleted: false }; // Ensure we only fetch non-deleted projects
+
+    // Add status filter if provided and valid
+    if (status) {
+      whereCondition.status = status;
+    }
+
+    // Determine the sorting order (default is ascending if no `sort` query is provided)
+    const orderCondition: any = [["due_date", "ASC"]]; // Default to ascending order
+
+    if (sort && (sort === "asc" || sort === "desc")) {
+      orderCondition[0][1] = sort.toUpperCase(); // Update the sort direction based on the query
+    }
+
+    // Fetch projects based on the dynamic condition and sorting
+    const projects = await Project.findAll({
+      where: whereCondition,
+      order: orderCondition, // Apply sorting based on `due_date`
+    });
+
+    // If projects are found, respond with the data
+    resSuccess(res, "Projects fetched successfully", projects);
+  } catch (err) {
+    next(err); // Pass the error to the error handler
+  }
+};
 
 // Get a single project by ID
 export const getProjectById = async (
@@ -202,9 +200,6 @@ export const searchProjects = async (
     }
 
     resSuccess(res, "Projects retrieved successfully!", projects);
-
-
-  
   } catch (err) {
     next(err); // Pass the error to the error handler
   }
